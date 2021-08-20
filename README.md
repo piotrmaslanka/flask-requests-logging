@@ -38,6 +38,10 @@ Enjoy!
 
 ## Changelog
 
+### v0.3
+
+* added measuring how long given request has taken
+
 ### v0.2
 
 * added pass_as_extras parameter
