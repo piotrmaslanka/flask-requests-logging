@@ -11,6 +11,7 @@ FlaskRequestsLogging(app)
 
 logging.basicConfig(level=logging.INFO)
 
+
 @app.route('/', methods=['GET'])
 def response():
     return Response('ok')
