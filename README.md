@@ -38,6 +38,10 @@ Enjoy!
 
 ## Changelog
 
+### v0.4
+
+* added support for logging exception tracebacks
+
 ### v0.3
 
 * added measuring how long given request has taken

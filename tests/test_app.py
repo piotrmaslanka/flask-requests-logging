@@ -17,8 +17,19 @@ def response():
     return Response('ok')
 
 
+@app.route('/value', methods=['GET'])
+def value():
+    raise ValueError()
+
+
 class TestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.client = app.test_client()
+
     def test_requests(self):
-        client = app.test_client()
-        resp = client.get('/')
+        resp = self.client.get('/')
         self.assertEqual(resp.status_code, 200)
+
+    def test_error(self):
+        resp = self.client.get('/value')
+        self.assertEqual(resp.status_code, 500)
