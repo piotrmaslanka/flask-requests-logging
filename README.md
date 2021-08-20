@@ -32,6 +32,10 @@ Enjoy!
 
 ## Changelog
 
+### v0.2
+
+* added pass_as_extras parameter
+
 ### v0.1
 
 * first release, wow!
