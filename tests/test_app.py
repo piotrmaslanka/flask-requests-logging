@@ -1,3 +1,4 @@
+import logging
 import unittest
 
 import flask
@@ -8,6 +9,7 @@ from flask_requests_logging import FlaskRequestsLogging
 app = flask.Flask(__name__)
 FlaskRequestsLogging(app)
 
+logging.basicConfig(level=logging.INFO)
 
 @app.route('/', methods=['GET'])
 def response():
