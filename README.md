@@ -38,6 +38,10 @@ Enjoy!
 
 ## Changelog
 
+### v0.5
+
+* logger will now log path instead of the match 
+
 ### v0.4
 
 * added support for logging exception tracebacks

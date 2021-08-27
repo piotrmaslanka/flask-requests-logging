@@ -6,24 +6,26 @@ import flask
 from satella.time import measure
 
 logger = logging.getLogger(__name__)
-__version__ = '0.4'
+__version__ = '0.5'
 
 
 def FlaskRequestsLogging(app, default_level_mapping: tp.Optional[tp.Dict[int, int]] = None,
                          log_template: tp.Callable[[Request, Response], str] = \
                                  lambda req,
-                                        resp: f'Request {req.method} {str(req.url_rule)} finished '
-                                              f'with {resp.status_code} took {req.time_elapsed()} '
-                                              f'seconds',
+                                        resp: f'Request {req.method} {req.path} '
+                                              f'finished with {resp.status_code} '
+                                              f'took {req.time_elapsed()} seconds',
                          extra_args_gen: tp.Callable[[Request, Response], dict] = \
-                                 lambda req, resp: {'url': str(req.url_rule), 'method': req.method,
+                                 lambda req, resp: {'url': req.path,
+                                                    'method': req.method,
                                                     'status_code': resp.status_code,
                                                     'elapsed': req.time_elapsed()},
                          unhandled_exception_template: tp.Callable[[Request, Exception], str] = \
-                             lambda req, exc: f'Got exception while processing {req.method} '
-                                              f'{str(req.url_rule)}',
+                                 lambda req, exc: f'Got exception while processing {req.method} '
+                                                  f'{req.path}',
                          extra_except_args_gen: tp.Callable[[Request, Exception], dict] = \
-                                 lambda req, exc: {'url': str(req.url_rule), 'method': req.method,
+                                 lambda req, exc: {'url': req.path,
+                                                   'method': req.method,
                                                    'elapsed': req.time_elapsed()},
                          log_unhandled_exceptions_as: int = logging.ERROR,
                          pass_as_extras: bool = True):
@@ -34,7 +36,8 @@ def FlaskRequestsLogging(app, default_level_mapping: tp.Optional[tp.Dict[int, in
     which will return the amount of time that it took to execute given request.
 
     Exceptions will emit two log entries, one for log_template and one for
-    unhandled_exception_template
+    unhandled_exception_template, only if given exception is unhandled. A exception log
+    entry WILL NOT be generated for a handled exception. Dump their traces there.
 
     :param app: app to use
     :param default_level_mapping: a mapping of either leftmost digit to error code, or entire
@@ -58,6 +61,7 @@ def FlaskRequestsLogging(app, default_level_mapping: tp.Optional[tp.Dict[int, in
                                                       3: logging.INFO,
                                                       4: logging.WARN,
                                                       5: logging.ERROR}
+
     @app.before_request
     def before_request():
         flask.request.time_elapsed = measure()
@@ -96,4 +100,3 @@ def FlaskRequestsLogging(app, default_level_mapping: tp.Optional[tp.Dict[int, in
             logger.log(log_unhandled_exceptions_as, msg, exc_info=e, extra=extras)
         else:
             logger.log(log_unhandled_exceptions_as, msg, exc_info=e, **extras)
-
