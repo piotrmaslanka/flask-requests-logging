@@ -26,6 +26,7 @@ pip install git+https://github.com/smok-serwis/flask-requests-logging.git
 
 ```python
 import flask
+import logging
 from flask_requests_logging import FlaskRequestsLogging
 
 app = flask.Flask(__name__)
@@ -37,6 +38,12 @@ Go read the [if you're interested in the details](flask_requests_logging/__init_
 Enjoy!
 
 ## Changelog
+
+### v1.0
+
+* breaking change in API
+* streaming requests will be calculated correctly now
+* logger will configure itself automatically to render even the lowest levels
 
 ### v0.5
 
