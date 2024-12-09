@@ -11,7 +11,7 @@ app = flask.Flask(__name__)
 FlaskRequestsLogging(app)
 
 
-@app.route('/', methods=['GET'])
+@app.route('/heh', methods=['GET'])
 def response():
     return Response('ok')
 
@@ -29,7 +29,27 @@ def stream2():
         time.sleep(3)
         yield b'test'
 
-    return Response(stream())
+    class MyTestResponse(Response):
+        implicit_sequence_conversion = False
+        automatically_set_content_length = False
+
+    return MyTestResponse(stream())
+
+
+@app.route('/stream/err', methods=['GET'])
+def stream3():
+    def stream():
+        yield b'test'
+        yield b'test'
+        raise ValueError()
+        yield b'test'
+
+    class MyTestResponse(Response):
+        implicit_sequence_conversion = False
+        automatically_set_content_length = False
+
+    return MyTestResponse(stream())
+
 
 
 class TestCase(unittest.TestCase):
@@ -37,7 +57,7 @@ class TestCase(unittest.TestCase):
         self.client = app.test_client()
 
     def test_requests(self):
-        resp = self.client.get('/')
+        resp = self.client.get('/heh')
         self.assertEqual(resp.status_code, 200)
 
     def test_error(self):
@@ -48,3 +68,7 @@ class TestCase(unittest.TestCase):
         resp = self.client.get('/stream')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data, b'testtesttest')
+
+    def test_streaming_response_err(self):
+        resp = self.client.get('/stream/err')
+        self.assertEqual(resp.status_code, 200)

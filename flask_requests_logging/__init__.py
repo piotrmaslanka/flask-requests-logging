@@ -4,11 +4,26 @@ import logging
 
 from flask import Response
 import flask
-from satella.coding import run_when_iterator_completes
+from satella.coding import run_when_iterator_completes, wraps
 from satella.time import measure
 
 logger = logging.getLogger(__name__)
-__version__ = '1.0'
+__version__ = '1.1'
+
+
+def dont_log_me(fun):
+    """
+    A decorator to disable logging of given metric.
+
+    Use as follows:
+
+    >>> @dont_log_me
+    >>> def my_flask_view():
+    >>>     ...
+    """
+    @wraps(fun)
+    def inner(*args, **kwargs):
+        return fun(*args, **kwargs)
 
 
 def FlaskRequestsLogging(app, default_level_mapping: tp.Optional[tp.Dict[int, int]] = None,
@@ -79,7 +94,7 @@ def FlaskRequestsLogging(app, default_level_mapping: tp.Optional[tp.Dict[int, in
         }
 
         if inspect.isgenerator(resp.response):
-            resp.response = run_when_iterator_completes(resp.response, log, extras)
+            resp.response = run_when_iterator_completes(resp.response, log, None, extras)
         else:
             log(extras)
         return resp
